@@ -9,6 +9,9 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'EAA 690 - Experimental Aircraft Association Chapter 690',
   description: 'EAA 690 is a Chapter of the Experimental Aircraft Association, located at Briscoe Field (KLZU) in Lawrenceville, Georgia.',
+  icons: {
+    icon: '/logo.png',
+  },
 }
 
 export default function RootLayout({

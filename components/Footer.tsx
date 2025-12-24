@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function Footer() {
   return (
@@ -6,6 +7,13 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
+            <Image
+              src="/logo.png"
+              alt="EAA 690 Logo"
+              width={80}
+              height={80}
+              className="h-20 w-auto mb-4"
+            />
             <h3 className="text-lg font-bold mb-4">EAA 690</h3>
             <p className="text-sm text-gray-300">
               A Chapter of the Experimental Aircraft Association, located at Briscoe Field (KLZU) in Lawrenceville, Georgia.

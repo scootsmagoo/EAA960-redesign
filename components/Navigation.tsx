@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -51,9 +52,14 @@ export default function Navigation() {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3">
-            <div className="w-16 h-16 bg-eaa-yellow rounded-full flex items-center justify-center">
-              <span className="text-eaa-blue font-bold text-xl">EAA</span>
-            </div>
+            <Image
+              src="/logo.png"
+              alt="EAA 690 Logo"
+              width={64}
+              height={64}
+              className="h-16 w-auto"
+              priority
+            />
             <span className="text-xl font-bold">EAA 690</span>
           </Link>
 
