@@ -1,10 +1,14 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { PT_Serif } from 'next/font/google'
 import './globals.css'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 
-const inter = Inter({ subsets: ['latin'] })
+const ptSerif = PT_Serif({ 
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-pt-serif',
+})
 
 export const metadata: Metadata = {
   title: 'EAA 690 - Experimental Aircraft Association Chapter 690',
@@ -21,7 +25,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={ptSerif.className}>
         <Navigation />
         <main className="min-h-screen">{children}</main>
         <Footer />

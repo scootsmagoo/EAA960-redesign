@@ -1,13 +1,29 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { isAuthenticated, getLogoutUrl } from '@/lib/auth'
 import Image from 'next/image'
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isChapterOpen, setIsChapterOpen] = useState(false)
   const [isProgramsOpen, setIsProgramsOpen] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    // Only check auth on client side
+    if (typeof window !== 'undefined') {
+      setIsLoggedIn(isAuthenticated())
+      
+      // Check auth status periodically
+      const interval = setInterval(() => {
+        setIsLoggedIn(isAuthenticated())
+      }, 2000)
+      
+      return () => clearInterval(interval)
+    }
+  }, [])
 
   const navigation = [
     { name: 'Home', href: '/' },
@@ -94,12 +110,23 @@ export default function Navigation() {
 
           {/* Right side actions */}
           <div className="hidden lg:flex items-center space-x-4">
-            <Link
-              href="/login"
-              className="px-4 py-2 text-sm font-medium hover:text-eaa-yellow transition-colors"
-            >
-              Login
-            </Link>
+            {isLoggedIn === null ? (
+              <div className="px-4 py-2 text-sm font-medium opacity-0">Login</div>
+            ) : isLoggedIn ? (
+              <a
+                href={getLogoutUrl()}
+                className="px-4 py-2 text-sm font-medium hover:text-eaa-yellow transition-colors"
+              >
+                Logout
+              </a>
+            ) : (
+              <Link
+                href="/login"
+                className="px-4 py-2 text-sm font-medium hover:text-eaa-yellow transition-colors"
+              >
+                Login
+              </Link>
+            )}
             <div className="flex items-center space-x-3">
               <a href="#" className="hover:text-eaa-yellow transition-colors" aria-label="Twitter">
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -176,13 +203,23 @@ export default function Navigation() {
                   )}
                 </div>
               ))}
-              <Link
-                href="/login"
-                className="block px-3 py-2 text-base font-medium hover:bg-eaa-light-blue rounded-md"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Login
-              </Link>
+              {isLoggedIn === null ? null : isLoggedIn ? (
+                <a
+                  href={getLogoutUrl()}
+                  className="block px-3 py-2 text-base font-medium hover:bg-eaa-light-blue rounded-md"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Logout
+                </a>
+              ) : (
+                <Link
+                  href="/login"
+                  className="block px-3 py-2 text-base font-medium hover:bg-eaa-light-blue rounded-md"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Login
+                </Link>
+              )}
             </div>
           </div>
         )}
