@@ -4,10 +4,11 @@
   "installCommand": "npm install",
   "framework": "nextjs",
   "regions": ["iad1"],
-  "rewrites": [
+  "redirects": [
     {
       "source": "/login",
-      "destination": "/login"
+      "destination": "/login",
+      "permanent": false
     }
   ]
 }
