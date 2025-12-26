@@ -52,7 +52,7 @@ export default function AdminSetupPage() {
         setName('')
         // Redirect to login after a delay
         setTimeout(() => {
-          router.push('/login')
+          router.push('/sign-in')
         }, 2000)
       }
     } catch (err) {

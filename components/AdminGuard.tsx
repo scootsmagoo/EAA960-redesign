@@ -27,7 +27,7 @@ export default function AdminGuard({ children }: AdminGuardProps) {
 
   // If user is not authenticated, redirect to login
   if (!session) {
-    router.push('/login?redirect=' + encodeURIComponent(window.location.pathname))
+    router.push('/sign-in?redirect=' + encodeURIComponent(window.location.pathname))
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">

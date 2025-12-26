@@ -120,7 +120,7 @@ export default function Navigation() {
               </div>
             ) : (
               <Link
-                href="/login"
+                href="/sign-in"
                 className="px-4 py-2 text-sm font-medium hover:text-eaa-yellow transition-colors"
               >
                 Login
@@ -219,7 +219,7 @@ export default function Navigation() {
                 </div>
               ) : (
                 <Link
-                  href="/login"
+                  href="/sign-in"
                   className="block px-3 py-2 text-base font-medium hover:bg-eaa-light-blue rounded-md"
                   onClick={() => setIsMenuOpen(false)}
                 >

@@ -8,8 +8,8 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Explicitly handle /login to prevent any external redirects
-  if (pathname === '/login') {
+  // Explicitly handle /login and /sign-in to prevent any external redirects
+  if (pathname === '/login' || pathname === '/sign-in') {
     // Allow the request to proceed to our Next.js login page
     return NextResponse.next()
   }

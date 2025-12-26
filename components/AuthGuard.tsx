@@ -26,7 +26,7 @@ export default function AuthGuard({ children, requireAuth = false }: AuthGuardPr
 
   // If auth is required but user is not authenticated, redirect to login
   if (requireAuth && !session) {
-    router.push('/login')
+    router.push('/sign-in')
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">

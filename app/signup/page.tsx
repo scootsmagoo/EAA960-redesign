@@ -43,7 +43,7 @@ export default function SignupPage() {
         setError(result.error.message || 'Failed to create account')
       } else {
         // Successful signup - redirect to login or verification page
-        router.push('/login?message=Account created. Please check your email to verify your account.')
+        router.push('/sign-in?message=Account created. Please check your email to verify your account.')
       }
     } catch (err) {
       setError('An error occurred. Please try again.')
@@ -62,7 +62,7 @@ export default function SignupPage() {
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             Already have an account?{' '}
-            <Link href="/login" className="font-medium text-eaa-blue hover:text-eaa-light-blue">
+            <Link href="/sign-in" className="font-medium text-eaa-blue hover:text-eaa-light-blue">
               Sign in
             </Link>
           </p>
