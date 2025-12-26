@@ -89,7 +89,7 @@ pnpm dev
 ## Project Structure
 
 ```
-EAA960/
+EAA690/
 ├── app/                    # Next.js App Router pages
 │   ├── page.tsx           # Homepage
 │   ├── layout.tsx         # Root layout
@@ -134,10 +134,37 @@ Update content in the respective page files in the `app/` directory.
 
 ### Authentication
 
-To customize authentication behavior, edit `lib/auth.ts`. The current implementation:
-- Checks for Squarespace cookies to determine login status
-- Redirects to Squarespace login page
-- Handles logout via Squarespace
+This site uses **BetterAuth** for authentication with the following features:
+- Email/password authentication
+- Email verification
+- Two-factor authentication (MFA/TOTP)
+- Admin role management
+- Session management
+
+#### Creating an Admin Account
+
+**Option 1: Using the Admin Setup Page (Development Only)**
+1. Navigate to `/admin/setup` in your browser
+2. Fill in the admin account details
+3. Click "Create Admin Account"
+4. **Important:** Remove or protect this page in production!
+
+**Option 2: Using the Script**
+```bash
+# Install tsx if not already installed
+npm install -D tsx
+
+# Create admin account
+npx tsx scripts/create-admin.ts admin@eaa690.org password123 "Admin User"
+```
+
+#### Admin Features
+
+- Use `AdminGuard` component to protect admin-only pages
+- Use `useIsAdmin()` hook to check admin status in components
+- Admin users have access to user management and site administration
+
+See `BETTERAUTH_SETUP.md` for detailed setup instructions.
 
 ## Deployment
 
@@ -146,13 +173,12 @@ This project is ready to deploy on:
 - [Netlify](https://netlify.com)
 - Any Node.js hosting platform
 
-### Domain Setup for Authentication
+### Database Setup
 
-**Important:** For Squarespace authentication to work, deploy your Next.js site to:
-- `eaa690.org` (same domain), or
-- A subdomain like `app.eaa690.org` or `members.eaa690.org`
-
-You can configure this in your hosting provider's DNS settings.
+BetterAuth requires a PostgreSQL database. See `BETTERAUTH_SETUP.md` for:
+- Database setup options (Vercel Postgres, Supabase, etc.)
+- Environment variable configuration
+- Database migration instructions
 
 ## License
 

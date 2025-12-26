@@ -1,17 +1,12 @@
 /**
- * Squarespace Authentication Helper
+ * @deprecated This file is deprecated. Use BetterAuth instead.
  * 
- * This module provides utilities to check if a user is authenticated
- * via Squarespace's Member Areas system.
+ * This module was used for Squarespace authentication but has been replaced
+ * with BetterAuth for better security, MFA support, and more features.
  * 
- * IMPORTANT: For this to work properly, your Next.js site must be hosted
- * on the same domain as your Squarespace site (eaa690.org) or a subdomain.
- * Cookies are domain-specific and won't be accessible across different domains.
+ * See: lib/better-auth.ts and lib/better-auth-client.ts
  * 
- * If hosting on a different domain, you'll need to:
- * 1. Use Squarespace's Member Areas API (if available)
- * 2. Implement a server-side proxy to check authentication
- * 3. Use OAuth/SSO integration
+ * This file is kept for reference during migration but should not be used in new code.
  */
 
 export function isAuthenticated(): boolean {

@@ -1,29 +1,23 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
-import { isAuthenticated, getLogoutUrl } from '@/lib/auth'
+import { useRouter } from 'next/navigation'
+import { useSession, signOut } from '@/lib/better-auth-client'
 import Image from 'next/image'
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isChapterOpen, setIsChapterOpen] = useState(false)
   const [isProgramsOpen, setIsProgramsOpen] = useState(false)
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
+  const { data: session, isPending } = useSession()
+  const router = useRouter()
 
-  useEffect(() => {
-    // Only check auth on client side
-    if (typeof window !== 'undefined') {
-      setIsLoggedIn(isAuthenticated())
-      
-      // Check auth status periodically
-      const interval = setInterval(() => {
-        setIsLoggedIn(isAuthenticated())
-      }, 2000)
-      
-      return () => clearInterval(interval)
-    }
-  }, [])
+  const handleLogout = async () => {
+    await signOut()
+    router.push('/')
+    router.refresh()
+  }
 
   const navigation = [
     { name: 'Home', href: '/' },
@@ -110,15 +104,20 @@ export default function Navigation() {
 
           {/* Right side actions */}
           <div className="hidden lg:flex items-center space-x-4">
-            {isLoggedIn === null ? (
+            {isPending ? (
               <div className="px-4 py-2 text-sm font-medium opacity-0">Login</div>
-            ) : isLoggedIn ? (
-              <a
-                href={getLogoutUrl()}
-                className="px-4 py-2 text-sm font-medium hover:text-eaa-yellow transition-colors"
-              >
-                Logout
-              </a>
+            ) : session ? (
+              <div className="flex items-center space-x-4">
+                <span className="text-sm text-gray-200">
+                  {session.user?.name || session.user?.email}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="px-4 py-2 text-sm font-medium hover:text-eaa-yellow transition-colors"
+                >
+                  Logout
+                </button>
+              </div>
             ) : (
               <Link
                 href="/login"
@@ -203,14 +202,21 @@ export default function Navigation() {
                   )}
                 </div>
               ))}
-              {isLoggedIn === null ? null : isLoggedIn ? (
-                <a
-                  href={getLogoutUrl()}
-                  className="block px-3 py-2 text-base font-medium hover:bg-eaa-light-blue rounded-md"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Logout
-                </a>
+              {isPending ? null : session ? (
+                <div>
+                  <div className="block px-3 py-2 text-sm text-gray-200">
+                    {session.user?.name || session.user?.email}
+                  </div>
+                  <button
+                    onClick={() => {
+                      handleLogout()
+                      setIsMenuOpen(false)
+                    }}
+                    className="block w-full text-left px-3 py-2 text-base font-medium hover:bg-eaa-light-blue rounded-md"
+                  >
+                    Logout
+                  </button>
+                </div>
               ) : (
                 <Link
                   href="/login"

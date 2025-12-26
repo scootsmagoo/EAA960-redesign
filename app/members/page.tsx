@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import AuthGuard from '@/components/AuthGuard'
 
 export default function MembersPage() {
@@ -12,8 +13,16 @@ export default function MembersPage() {
             This is a protected members-only area. Only authenticated users can access this content.
           </p>
           <p className="text-gray-700">
-            You are logged in through Squarespace Member Areas. Your existing account credentials work here!
+            You are logged in with your EAA 690 account. Welcome to the members area!
           </p>
+          <div className="mt-4">
+            <Link
+              href="/account"
+              className="text-eaa-blue hover:text-eaa-light-blue font-medium"
+            >
+              Manage Account Settings →
+            </Link>
+          </div>
         </div>
 
         <div className="mt-8 bg-blue-50 p-6 rounded-lg">
