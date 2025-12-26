@@ -157,15 +157,12 @@ export async function POST(request: NextRequest) {
     if (!userId && result) {
       // Log the full result to debug the structure
       console.log('Full BetterAuth result:', JSON.stringify(result, null, 2))
-      console.log('Result data:', result.data)
       console.log('Result keys:', Object.keys(result))
       
-      // BetterAuth's signUpEmail returns { token, user } directly in result.data
-      // But when called server-side via auth.api, it might be wrapped differently
-      const responseData = result.data || result
-      const user = responseData?.user || (result as any)?.user
+      // BetterAuth's signUpEmail returns { token, user } directly
+      // The result type is { token: null | string; user: { id: string; ... } }
+      const user = (result as any)?.user
       
-      console.log('Response data:', responseData)
       console.log('User object:', user)
       console.log('User ID:', user?.id)
 
@@ -174,11 +171,7 @@ export async function POST(request: NextRequest) {
 
       if (!userId) {
         console.error('Could not find user ID in result:', {
-          hasData: !!result.data,
-          hasResponseData: !!responseData,
           hasUser: !!user,
-          dataKeys: result.data ? Object.keys(result.data) : [],
-          responseDataKeys: responseData ? Object.keys(responseData) : [],
           resultKeys: Object.keys(result),
           fullResult: result,
         })
@@ -187,10 +180,8 @@ export async function POST(request: NextRequest) {
             error: 'User created but ID not found',
             debug: process.env.NODE_ENV === 'development' ? {
               resultStructure: result,
-              responseData: responseData,
               user: user,
-              dataKeys: result.data ? Object.keys(result.data) : [],
-              responseDataKeys: responseData ? Object.keys(responseData) : [],
+              resultKeys: Object.keys(result),
             } : undefined,
           },
           { status: 500 }
