@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
 
     // Create user using BetterAuth's signUpEmail API
     console.log('Creating user account...')
-    let result
+    let result: { token: null | string; user: { id: string } } | undefined
     let userId: string | null = null
     
     try {
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
           password,
           name,
         },
-      })
+      }) as { token: null | string; user: { id: string } }
     } catch (apiError: any) {
       // Check if user already exists
       if (apiError?.statusCode === 422 && apiError?.body?.code === 'USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL') {
@@ -161,7 +161,7 @@ export async function POST(request: NextRequest) {
       
       // BetterAuth's signUpEmail returns { token, user } directly
       // The result type is { token: null | string; user: { id: string; ... } }
-      const user = (result as any)?.user
+      const user = result.user
       
       console.log('User object:', user)
       console.log('User ID:', user?.id)
