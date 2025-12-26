@@ -8,6 +8,8 @@ const ptSerif = PT_Serif({
   subsets: ['latin'],
   weight: ['400', '700'],
   variable: '--font-pt-serif',
+  display: 'swap',
+  fallback: ['serif'],
 })
 
 export const metadata: Metadata = {
