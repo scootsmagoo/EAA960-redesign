@@ -129,7 +129,31 @@ export async function POST(request: NextRequest) {
         const error: any = new Error(errorData.error || `HTTP ${response.status}`)
         error.statusCode = response.status
         error.body = errorData
-        throw error
+        
+        // If 403 and user might already exist, check database first
+        if (response.status === 403) {
+          console.log('403 error during sign-up, checking if user already exists...')
+          try {
+            const existingUser = await pool.query(
+              'SELECT id FROM "user" WHERE email = $1',
+              [email.toLowerCase()]
+            )
+            
+            if (existingUser.rows.length > 0) {
+              userId = existingUser.rows[0].id
+              console.log('User already exists with ID:', userId)
+              // Continue to set admin role below
+            } else {
+              // User doesn't exist but got 403 - this is a real error
+              throw error
+            }
+          } catch (checkError) {
+            console.error('Failed to check for existing user:', checkError)
+            throw error
+          }
+        } else {
+          throw error
+        }
       }
       
       result = await response.json() as { token: null | string; user: { id: string } }
