@@ -86,18 +86,38 @@ export async function POST(request: NextRequest) {
     }
 
     // Create user using BetterAuth's signUpEmail API
+    // Use direct HTTP request to avoid internal API issues
     console.log('Creating user account...')
+    const baseURL = auth.config.baseURL || process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_BETTER_AUTH_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+    const signUpURL = `${baseURL}${auth.config.basePath}/sign-up/email`
+    console.log('Sign-up URL:', signUpURL)
+    
     let result: { token: null | string; user: { id: string } } | undefined
     let userId: string | null = null
     
     try {
-      result = await auth.api.signUpEmail({
-        body: {
-          email,
+      // Make direct HTTP request to Better Auth endpoint
+      const response = await fetch(signUpURL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email.toLowerCase(),
           password,
           name,
-        },
-      }) as { token: null | string; user: { id: string } }
+        }),
+      })
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+        const error: any = new Error(errorData.error || `HTTP ${response.status}`)
+        error.statusCode = response.status
+        error.body = errorData
+        throw error
+      }
+      
+      result = await response.json() as { token: null | string; user: { id: string } }
     } catch (apiError: any) {
       // Check if user already exists
       if (apiError?.statusCode === 422 && apiError?.body?.code === 'USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL') {
@@ -127,10 +147,24 @@ export async function POST(request: NextRequest) {
           )
         }
       } else {
-        // Some other error occurred
+        // Some other error occurred - could be 403 Forbidden
         console.error('BetterAuth API error:', apiError)
         console.error('Error type:', typeof apiError)
+        console.error('Error status:', (apiError as any)?.statusCode || (apiError as any)?.status)
         console.error('Error details:', JSON.stringify(apiError, Object.getOwnPropertyNames(apiError)))
+        
+        // Check if it's a 403 error
+        const statusCode = (apiError as any)?.statusCode || (apiError as any)?.status || 500
+        if (statusCode === 403) {
+          return NextResponse.json(
+            { 
+              error: 'Sign-up is forbidden. This might be due to Better Auth configuration or security restrictions.',
+              details: apiError instanceof Error ? apiError.message : '403 Forbidden',
+              suggestion: 'Check Better Auth configuration and ensure sign-up is enabled. You may need to configure the baseURL correctly.',
+            },
+            { status: 403 }
+          )
+        }
         
         // Try to get more details from the error
         const errorDetails = apiError instanceof Error 
@@ -139,6 +173,7 @@ export async function POST(request: NextRequest) {
               name: apiError.name,
               stack: apiError.stack,
               cause: (apiError as any).cause,
+              statusCode: (apiError as any)?.statusCode,
             }
           : { raw: apiError }
         
@@ -146,9 +181,10 @@ export async function POST(request: NextRequest) {
           { 
             error: 'Failed to create account via BetterAuth API', 
             details: apiError instanceof Error ? apiError.message : 'Unknown API error',
+            statusCode: statusCode,
             errorDetails: process.env.NODE_ENV === 'development' ? errorDetails : undefined,
           },
-          { status: 500 }
+          { status: statusCode }
         )
       }
     }
