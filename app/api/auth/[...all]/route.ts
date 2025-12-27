@@ -47,10 +47,12 @@ async function handleWithError(
     
     // Log request for debugging
     const url = new URL(request.url)
+    const dbUrl = process.env.DATABASE_URL
     console.log("Better Auth request:", {
       path: url.pathname,
       method: request.method,
-      hasDatabase: !!process.env.DATABASE_URL,
+      hasDatabase: !!dbUrl,
+      databaseUrlPrefix: dbUrl ? dbUrl.substring(0, 50) + '...' : 'not set',
       hasSecret: !!process.env.BETTER_AUTH_SECRET,
     })
     
@@ -79,16 +81,22 @@ async function handleWithError(
     console.error("Better Auth API Error:", error)
     const errorMessage = error instanceof Error ? error.message : "Unknown error"
     const errorStack = error instanceof Error ? error.stack : undefined
+    const errorCode = (error as any)?.code
+    const errorDetail = (error as any)?.detail
     
     // Log full error details for debugging
     const url = new URL(request.url)
+    const dbUrl = process.env.DATABASE_URL
     console.error("Error details:", {
       message: errorMessage,
+      code: errorCode,
+      detail: errorDetail,
       stack: errorStack,
       url: request.url,
       path: url.pathname,
       method: request.method,
-      hasDatabase: !!process.env.DATABASE_URL,
+      hasDatabase: !!dbUrl,
+      databaseUrlPrefix: dbUrl ? dbUrl.substring(0, 50) + '...' : 'not set',
       hasSecret: !!process.env.BETTER_AUTH_SECRET,
       errorType: error?.constructor?.name,
     })
@@ -97,6 +105,8 @@ async function handleWithError(
       JSON.stringify({
         error: "Internal server error",
         message: errorMessage,
+        code: errorCode,
+        detail: errorDetail,
         path: url.pathname,
         ...(process.env.NODE_ENV === "development" && { stack: errorStack }),
       }),
