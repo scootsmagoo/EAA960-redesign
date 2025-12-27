@@ -82,11 +82,28 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Database check error:', error)
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    const errorCode = (error as any)?.code
+    const errorDetails = {
+      message: errorMessage,
+      code: errorCode,
+      hasDatabaseUrl: !!process.env.DATABASE_URL,
+      databaseUrlPrefix: process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 50) + '...' : 'Not set',
+    }
+    
+    // Log full error for debugging
+    console.error('Full error details:', {
+      error,
+      errorMessage,
+      errorCode,
+      stack: error instanceof Error ? error.stack : undefined,
+    })
     
     return NextResponse.json(
       { 
         error: 'Failed to check database',
         details: errorMessage,
+        errorCode: errorCode,
+        ...(process.env.NODE_ENV === 'development' && errorDetails),
       },
       { status: 500 }
     )

@@ -10,20 +10,51 @@ function getPool(): Pool | null {
   
   if (process.env.DATABASE_URL) {
     try {
-      _pool = new Pool({
-        connectionString: process.env.DATABASE_URL,
-        ssl: process.env.DATABASE_URL?.includes("localhost") 
-          ? false 
-          : { rejectUnauthorized: false },
+      const connectionString = process.env.DATABASE_URL
+      
+      // Log connection attempt (without sensitive data)
+      console.log('Creating database pool:', {
+        hasUrl: !!connectionString,
+        urlPrefix: connectionString.substring(0, 30) + '...',
+        isLocalhost: connectionString.includes('localhost'),
       })
       
-      // Test the connection
+      _pool = new Pool({
+        connectionString: connectionString,
+        ssl: connectionString.includes("localhost") 
+          ? false 
+          : { rejectUnauthorized: false },
+        // Add connection timeout for Supabase
+        connectionTimeoutMillis: 10000,
+        // Test connection on creation
+        max: 1, // Start with 1 connection for testing
+      })
+      
+      // Test the connection immediately
+      _pool.query('SELECT NOW()').catch((err) => {
+        console.error('Initial database connection test failed:', {
+          message: err.message,
+          code: (err as any)?.code,
+          detail: (err as any)?.detail,
+        })
+        _pool = null // Reset pool on error
+      })
+      
+      // Handle runtime errors
       _pool.on('error', (err) => {
-        console.error('Unexpected database pool error:', err)
+        console.error('Unexpected database pool error:', {
+          message: err.message,
+          code: (err as any)?.code,
+          detail: (err as any)?.detail,
+        })
         _pool = null // Reset pool on error
       })
     } catch (error) {
-      console.error('Failed to create database pool:', error)
+      console.error('Failed to create database pool:', {
+        error,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        code: (error as any)?.code,
+      })
       _pool = null
     }
   } else {
