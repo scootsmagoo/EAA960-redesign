@@ -16,10 +16,16 @@
    - Go to **Settings** → **Environment Variables**
    - Add these variables:
      - `DATABASE_URL` = Your Supabase PostgreSQL connection string
-     - `BETTER_AUTH_URL` = `https://eaa-960-redesign.vercel.app`
-     - `NEXT_PUBLIC_BETTER_AUTH_URL` = `https://eaa-960-redesign.vercel.app`
+     - `BETTER_AUTH_SECRET` = Generate using: `openssl rand -base64 32` (REQUIRED!)
+     - `BETTER_AUTH_URL` = `https://eaa-960-redesign.vercel.app` (optional, will use current domain if not set)
+     - `NEXT_PUBLIC_BETTER_AUTH_URL` = `https://eaa-960-redesign.vercel.app` (optional, will use current domain if not set)
    - Make sure to select **Production**, **Preview**, and **Development** environments
    - Click **Save**
+   
+   **Important:** `BETTER_AUTH_SECRET` is required for authentication to work. Generate a secure secret:
+   ```bash
+   openssl rand -base64 32
+   ```
 
 4. **Redeploy** (if needed):
    - Go to **Deployments** tab

@@ -20,10 +20,12 @@ Create a `.env.local` file in the root of your project with the following variab
 DATABASE_URL=postgresql://user:password@host:5432/database_name
 
 # BetterAuth Configuration
+BETTER_AUTH_SECRET=your-secret-key-here-generate-with-openssl-rand-base64-32
 BETTER_AUTH_URL=http://localhost:3000
 NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3000
 
 # For production, update these URLs:
+# BETTER_AUTH_SECRET=your-production-secret-key
 # BETTER_AUTH_URL=https://eaa690.org
 # NEXT_PUBLIC_BETTER_AUTH_URL=https://eaa690.org
 ```
@@ -112,9 +114,14 @@ To migrate existing Squarespace members:
 
 ### Vercel
 
-1. Add your database connection string to Vercel environment variables
-2. Set `BETTER_AUTH_URL` and `NEXT_PUBLIC_BETTER_AUTH_URL` to your production domain
-3. Deploy!
+1. Add your database connection string to Vercel environment variables (`DATABASE_URL`)
+2. **REQUIRED:** Generate and set `BETTER_AUTH_SECRET`:
+   ```bash
+   openssl rand -base64 32
+   ```
+   Add this to Vercel environment variables
+3. Optionally set `BETTER_AUTH_URL` and `NEXT_PUBLIC_BETTER_AUTH_URL` to your production domain (will auto-detect if not set)
+4. Deploy!
 
 ### Database Options on Vercel
 

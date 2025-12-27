@@ -54,6 +54,25 @@ function getBaseURL(): string {
   return "http://localhost:3000"
 }
 
+// Get the secret for Better Auth (required for production)
+function getSecret(): string {
+  if (process.env.BETTER_AUTH_SECRET) {
+    return process.env.BETTER_AUTH_SECRET
+  }
+  
+  // In development, generate a warning but allow a default
+  if (process.env.NODE_ENV === 'development') {
+    console.warn('⚠️  BETTER_AUTH_SECRET not set. Using default secret for development only.')
+    return 'dev-secret-change-in-production'
+  }
+  
+  // In production, throw an error if secret is missing
+  throw new Error(
+    'BETTER_AUTH_SECRET environment variable is required in production. ' +
+    'Generate one using: openssl rand -base64 32'
+  )
+}
+
 // BetterAuth configuration with MFA
 // Note: database may be undefined during build, but that's okay
 // The actual database operations happen at runtime
@@ -61,6 +80,7 @@ export const auth = betterAuth({
   database: getPool() || undefined,
   baseURL: getBaseURL(),
   basePath: "/api/auth",
+  secret: getSecret(),
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: false, // Disabled for now - can enable when email is configured

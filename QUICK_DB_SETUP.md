@@ -34,7 +34,9 @@
 # Database Configuration
 DATABASE_URL=postgresql://postgres.xxxxx:[YOUR-PASSWORD]@aws-0-us-east-1.pooler.supabase.com:6543/postgres
 
-# BetterAuth Configuration  
+# BetterAuth Configuration
+# Generate a secret: openssl rand -base64 32
+BETTER_AUTH_SECRET=your-secret-key-here-generate-with-openssl-rand-base64-32
 BETTER_AUTH_URL=http://localhost:3000
 NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3000
 ```
