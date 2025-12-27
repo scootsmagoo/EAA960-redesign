@@ -24,12 +24,26 @@ export async function OPTIONS(request: NextRequest) {
   return new Response(null, { status: 200 })
 }
 
+// Validate that BETTER_AUTH_SECRET is set at runtime
+function validateSecret() {
+  if (!process.env.BETTER_AUTH_SECRET || process.env.BETTER_AUTH_SECRET === 'dev-secret-change-in-production') {
+    if (process.env.VERCEL_URL || process.env.NODE_ENV === 'production') {
+      throw new Error(
+        'BETTER_AUTH_SECRET environment variable is required in production. ' +
+        'Generate one using: openssl rand -base64 32'
+      )
+    }
+  }
+}
+
 // Wrap handlers with error handling
 async function handleWithError(
   handler: (request: NextRequest) => Promise<Response>,
   request: NextRequest
 ) {
   try {
+    // Validate secret at runtime (not during build)
+    validateSecret()
     return await handler(request)
   } catch (error) {
     console.error("Better Auth API Error:", error)
